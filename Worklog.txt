@@ -1,3 +1,3 @@
 9/May/2020 Frist create Flybrid game project.  @Xiangtian Zheng
 11/May/2020 Upload the project to github. @Xiangtian Zheng
-11/May/2020 Updata the picture in project @Xiangtian Zheng
+13/May/2020 Updata the project player attribute in program to github. @Xiangtian Zheng
