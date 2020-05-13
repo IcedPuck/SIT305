@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         width = metrics.widthPixels;
         height = metrics.heightPixels;
         //play function
-
+        Play();
     }
     public void Play(){
 
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
                         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-//                            Play();
+                            Play();
                         }
                         return true;
                     }
