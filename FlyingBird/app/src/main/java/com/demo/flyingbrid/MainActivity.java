@@ -16,6 +16,9 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends AppCompatActivity {
 
     private int width;
@@ -63,7 +66,59 @@ public class MainActivity extends AppCompatActivity {
         Play();
     }
     public void Play(){
+        Finish = false;
+        //two pillars start place
+        pillars_width_1 = 100 + (float)(Math.random() * 500 % 401); // pillars 1 width
+        pillars_width_2 = pillars_width_1;
+        //pillars 1 set
+        pillars_x_1 = width - pillars_width_1;
+        pillars_y_1 = 0;
+        //pillars 2 set
+        pillars_x_2 = width - pillars_width_2;
+        pillars_y_2 = height;
 
+        pillars_height_1 = (float)(Math.random()*(height - 200)%(height - 100)); // pillars 1 height
+        pillars_height_2 = height - pillars_height_1 -200;// pillars 2 height
+
+        num = 0; //init number
+
+        pillars_speed = 5;
+
+        ball_speed = 3.5f;
+        ball_up = 90;
+        ball_x = 50;
+        ball_y = height / 2;
+
+        myGameView.setOnTouchListener(Click);
+        handler.sendEmptyMessage(0x123);
+
+        final Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //set ball's X and Y
+                ball_y = ball_y + ball_speed;
+                pillars_x_1 = pillars_x_1 - pillars_speed;
+                pillars_x_2 = pillars_x_2 - pillars_speed;
+                //pillars loop
+                if(pillars_x_1 <=0){
+                    pillars_x_1 = width - pillars_width_1;
+                    pillars_x_2 = width - pillars_width_2;
+                }
+                //check ball
+                if(ball_y >= height){
+                    Finish = true;
+                    timer.cancel();
+                }
+                if(ball_x >= pillars_x_1){
+                    if(ball_y < pillars_height_1 || ball_y > pillars_height_2){
+                        Finish = true;
+                        timer.cancel();
+                    }
+                }
+                handler.sendEmptyMessage(0x123);
+            }
+        }, 0, 15);
     }
     //Message
     Handler handler = new Handler(){
@@ -79,8 +134,10 @@ public class MainActivity extends AppCompatActivity {
     View.OnTouchListener Click = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
-                ball_y = ball_y -ball_up;
+            switch (motionEvent.getAction()){
+                case MotionEvent.ACTION_DOWN:
+                    ball_y = ball_y - ball_up;
+                    break;
             }
             return true;
         }
@@ -104,12 +161,14 @@ public class MainActivity extends AppCompatActivity {
             if (Finish) {
                 paint.setColor(Color.RED);
                 paint.setTextSize(80);
-                canvas.drawText("Game Over", width / 2, height / 2, paint);
+                canvas.drawText("Game Over", width / 2 - 10, height / 2, paint);
                 this.setOnTouchListener(new OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
-                        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                            Play();
+                        switch (motionEvent.getAction()){
+                            case MotionEvent.ACTION_DOWN:
+                                Play();
+                                break;
                         }
                         return true;
                     }
@@ -126,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                 //top pillars
                 canvas.drawRect(pillars_x_1, pillars_y_1, pillars_x_1 + pillars_width_1, pillars_y_1 + pillars_height_1, paint);
                 //button pillars
-                canvas.drawRect(pillars_x_2, pillars_y_2, pillars_x_2 + pillars_width_2, pillars_y_2 + pillars_height_2, paint);
+                canvas.drawRect(pillars_x_2, pillars_y_2 - pillars_height_2, pillars_x_2 + pillars_width_2, pillars_y_2 + pillars_height_2, paint);
 
             }
         }
