@@ -42,11 +42,14 @@ public class MainActivity extends AppCompatActivity {
     float pillars_x_2;
     float pillars_y_2;
     //pass pillars number
-    int num = 0;
+    int num;
+    int level;
     //check this project finish or not
     boolean Finish = false;
+    boolean flag = true;
     //Game View
     MyGameView myGameView;
+    Timer timer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,31 +71,32 @@ public class MainActivity extends AppCompatActivity {
     public void Play(){
         Finish = false;
         //two pillars start place
-        pillars_width_1 = 100 + (float)(Math.random() * 500 % 401); // pillars 1 width
-        pillars_width_2 = pillars_width_1;
-        //pillars 1 set
-        pillars_x_1 = width - pillars_width_1;
+        pillars_height_1 = (float) (Math.random() * (height - 200) % (height -199));
+        pillars_width_1 = 100 + (float)(Math.random() * 500 % 401);
+        pillars_x_1 = width;
         pillars_y_1 = 0;
-        //pillars 2 set
-        pillars_x_2 = width - pillars_width_2;
+
+        pillars_height_2 = height - pillars_height_1 - 400;
+        pillars_width_2 = pillars_width_1;
+        pillars_x_2 = width;
         pillars_y_2 = height;
 
-        pillars_height_1 = (float)(Math.random()*(height - 200)%(height - 100)); // pillars 1 height
-        pillars_height_2 = height - pillars_height_1 -200;// pillars 2 height
-
         num = 0; //init number
+        flag = true;
 
         pillars_speed = 5;
 
         ball_speed = 3.5f;
         ball_up = 90;
-        ball_x = 50;
-        ball_y = height / 2;
+        ball_x = 400;
+        ball_y = height >> 1;
+
+        level = 5;
 
         myGameView.setOnTouchListener(Click);
         handler.sendEmptyMessage(0x123);
 
-        final Timer timer = new Timer();
+        timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -101,21 +105,44 @@ public class MainActivity extends AppCompatActivity {
                 pillars_x_1 = pillars_x_1 - pillars_speed;
                 pillars_x_2 = pillars_x_2 - pillars_speed;
                 //pillars loop
-                if(pillars_x_1 <=0){
-                    pillars_x_1 = width - pillars_width_1;
-                    pillars_x_2 = width - pillars_width_2;
+                if(pillars_x_1 + pillars_width_1 <=0){
+                    pillars_x_1 = width;
+                    pillars_x_2 = width;
+                    //随机下个柱子的高度
+                    pillars_height_1 = (float) (Math.random() * (height - 400) % (height - 199));
+                    pillars_width_1 = 100 + (float) (Math.random() * 500 % 401);
+
+                    pillars_height_2 = height - pillars_height_1 - 200;
+                    pillars_width_2 = pillars_width_1;
+                    flag = true;
                 }
                 //check ball
-                if(ball_y >= height){
+
+                if(ball_y >= height || ball_y <= 0){
                     Finish = true;
                     timer.cancel();
                 }
-                if(ball_x >= pillars_x_1){
-                    if(ball_y < pillars_height_1 || ball_y > pillars_height_2){
+
+
+                if(ball_x >= pillars_x_1 && ball_x <= pillars_x_1 + pillars_width_1)
+                {
+                    if(ball_y < pillars_height_1 || ball_y > pillars_height_2 + 200){
                         Finish = true;
                         timer.cancel();
                     }
                 }
+                //积分增加
+                if (flag){
+                    if(ball_x > pillars_x_1 + pillars_width_1){
+                        num++;
+                        flag = false;
+                    }
+                }
+                if(num == level){
+                    level = level + 2;
+                    pillars_speed = pillars_speed + 5;
+                }
+
                 handler.sendEmptyMessage(0x123);
             }
         }, 0, 15);
@@ -137,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
             switch (motionEvent.getAction()){
                 case MotionEvent.ACTION_DOWN:
                     ball_y = ball_y - ball_up;
+                    handler.sendEmptyMessage(0x123);
                     break;
             }
             return true;
@@ -145,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
     class MyGameView extends View {
         //get paint function
         Paint paint = new Paint();
-
         public MyGameView(Context context) {
             super(context);
         }
@@ -161,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
             if (Finish) {
                 paint.setColor(Color.RED);
                 paint.setTextSize(80);
-                canvas.drawText("Game Over", width / 2 - 10, height / 2, paint);
+                canvas.drawText("Game Over， you get: " + num, width >> 1, (height >> 1) + 40, paint);
                 this.setOnTouchListener(new OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -178,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
                 paint.setColor(Color.RED);
                 paint.setTextSize(80);
                 //open canvas
-                canvas.drawText(num + "", width / 2 - 10, 80, paint);// number
                 canvas.drawCircle(ball_x, ball_y, ball_size, paint);
                 // draw pillars
                 paint.setColor(Color.rgb(80, 80, 200));
@@ -187,6 +213,11 @@ public class MainActivity extends AppCompatActivity {
                 //button pillars
                 canvas.drawRect(pillars_x_2, pillars_y_2 - pillars_height_2, pillars_x_2 + pillars_width_2, pillars_y_2 + pillars_height_2, paint);
 
+                //number
+                paint.setColor(Color.RED);
+                paint.setTextSize(80);
+                paint.setTextAlign(Paint.Align.CENTER);
+                canvas.drawText(num + "", width >> 1, 80, paint);
             }
         }
     }
