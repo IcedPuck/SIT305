@@ -71,12 +71,12 @@ public class MainActivity extends AppCompatActivity {
     public void Play(){
         Finish = false;
         //two pillars start place
-        pillars_height_1 = (float) (Math.random() * (height - 200) % (height -199));
-        pillars_width_1 = 100 + (float)(Math.random() * 500 % 401);
+        pillars_height_1 = (float) (Math.random() * (height - 200) % (height -199) - 200);
+        pillars_width_1 = 100;
         pillars_x_1 = width;
         pillars_y_1 = 0;
 
-        pillars_height_2 = height - pillars_height_1 - 400;
+        pillars_height_2 = height - pillars_height_1 - 200;
         pillars_width_2 = pillars_width_1;
         pillars_x_2 = width;
         pillars_y_2 = height;
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
         pillars_speed = 5;
 
-        ball_speed = 3.5f;
+        ball_speed = 2.0f;
         ball_up = 90;
         ball_x = 400;
         ball_y = height >> 1;
@@ -109,8 +109,8 @@ public class MainActivity extends AppCompatActivity {
                     pillars_x_1 = width;
                     pillars_x_2 = width;
                     //随机下个柱子的高度
-                    pillars_height_1 = (float) (Math.random() * (height - 400) % (height - 199));
-                    pillars_width_1 = 100 + (float) (Math.random() * 500 % 401);
+                    pillars_height_1 = (float) (Math.random() * (height - 200) % (height - 199) - 200);
+                    pillars_width_1 = 100;
 
                     pillars_height_2 = height - pillars_height_1 - 200;
                     pillars_width_2 = pillars_width_1;
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(num == level){
                     level = level + 2;
-                    pillars_speed = pillars_speed + 5;
+                    pillars_speed = pillars_speed + 3;
                 }
 
                 handler.sendEmptyMessage(0x123);
