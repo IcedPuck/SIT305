@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if(ball_x >= pillars_x_1 && ball_x <= pillars_x_1 + pillars_width_1)
                 {
-                    if(ball_y < pillars_height_1 || ball_y > pillars_height_2 + 200){
+                    if(ball_y < pillars_height_1 || ball_y > pillars_height_1 + 200){
                         Finish = true;
                         timer.cancel();
                     }
