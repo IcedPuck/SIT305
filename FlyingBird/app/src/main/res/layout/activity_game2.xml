@@ -26,12 +26,12 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
     </LinearLayout>
-    <GridLayout
+    <com.demo.flyingbrid.Game2048
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:id="@+id/gameView">
 
-    </GridLayout>
+    </com.demo.flyingbrid.Game2048>
 
 </LinearLayout>
