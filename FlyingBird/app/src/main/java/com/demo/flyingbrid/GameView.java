@@ -91,23 +91,30 @@ public class GameView extends View {
         do {
             x = random.nextInt(count);
             y = random.nextInt(count);
-        }while (map[x][y] !=0);
+        } while (map[x][y] != 0);
         map[x][y] = num;
     }
+
     //check is to blocks are equal
-    private boolean isEquals(int[][] tempMap, int[][] map){
-        for (int i=0; i < count; i++){
-            for (int j =0; i<count; i++){
-                for(int j = 0; j < count; j++){
-                    if (tempMap[i][j] !=map[i][j]){
-                        return false;
-                    }
+    private boolean isEquals(int[][] tempMap, int[][] map) {
+        for (int i = 0; i < count; i++) {
+            for (int j = 0; i < count; i++) {
+                if (tempMap[i][j] != map[i][j]) {
+                    return false;
                 }
             }
         }
         return true;
     }
+
     // copy game data
+    private int[][] copyMap(int[][] map) {
+        int[][] tempMap = new int[count][count];
+        for (int i = 0; i < count; i++) {
+            tempMap[i] = map[i].clone();
+        }
+        return tempMap;
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
