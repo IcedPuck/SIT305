@@ -28,7 +28,7 @@ public class GameView extends View {
     private int startX;
     private int startY;
     private int block_size;
-    private int [][] map;
+    private int[][] map;
     private float x_click;
     private float y_click;
     private float x_move;
@@ -40,6 +40,7 @@ public class GameView extends View {
 
     //initial colors
     private static SparseIntArray blocks_colors;
+
     static {
         blocks_colors = new SparseIntArray();
         blocks_colors.put(2, Color.parseColor("#EEE4DA"));
@@ -67,7 +68,7 @@ public class GameView extends View {
         this.paint_width = 15f;
         this.random = new Random();
         this.map = new int[count][count];
-        for (int i = 0; i < 3; i++){
+        for (int i = 0; i < 3; i++) {
             createRandomBlock();
         }
         WindowManager windowManager = (WindowManager) context
@@ -82,15 +83,48 @@ public class GameView extends View {
 
         block_size = screen_width / count;
     }
+
+    private void createRandomBlock() {
+        int num = Math.random() < 0.9 ? 2 : 4;
+        int x;
+        int y;
+        do {
+            x = random.nextInt(count);
+            y = random.nextInt(count);
+        }while (map[x][y] !=0);
+        map[x][y] = num;
+    }
+    //check is to blocks are equal
+    private boolean isEquals(int[][] tempMap, int[][] map){
+        for (int i=0; i < count; i++){
+            for (int j =0; i<count; i++){
+                for(int j = 0; j < count; j++){
+                    if (tempMap[i][j] !=map[i][j]){
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    // copy game data
+
     @Override
-    protected void onDraw(Canvas canvas){
+    protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        gameArea(canvas,startX,startY);
+        gameArea(canvas, startX, startY);
         gameRect(canvas, map);
-        drawScore();
+        drawScore(canvas);
     }
 
     private void gameRect(Canvas canvas, int[][] map) {
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
+                if (map[i][j] != 0) {
+                    drawEachRect(canvas, i, j);
+                }
+            }
+        }
     }
 
     // draw parts
@@ -98,10 +132,10 @@ public class GameView extends View {
         // reset when game start
         paint.reset();
         paint.setColor(Color.GRAY);
-        paint.setTextSize(block_size * 5/ 12);
+        paint.setTextSize(block_size * 5 / 12);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setStrokeWidth(paint_width);
-        canvas.drawText("Score: " + scores, screen_width/2, startY/2, paint);
+        canvas.drawText("Score: " + scores, screen_width / 2, startY / 2, paint);
     }
 
     // draw each blocks
@@ -130,7 +164,7 @@ public class GameView extends View {
         //reset when game start
         paint.reset();
         paint.setColor(Color.parseColor("#CDC7BB"));
-        canvas.drawRect(x,y,screen_width,y+screen_width,paint);
+        canvas.drawRect(x, y, screen_width, y + screen_width, paint);
 
         //draw the dividing line
         paint.reset();
@@ -142,10 +176,7 @@ public class GameView extends View {
         }
         for (int i = 0; i <= count; i++) {
             canvas.drawLine(block_size * i, i + y, block_size * i, screen_width + y, paint);
+        }
+
     }
-
-    private void createRandomBlock() {
-    }
-
-
 }
