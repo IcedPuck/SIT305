@@ -85,10 +85,14 @@ public class GameView extends View {
     @Override
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
-        gameArea();
-        gameRect();
+        gameArea(canvas,startX,startY);
+        gameRect(canvas, map);
         drawScore();
     }
+
+    private void gameRect(Canvas canvas, int[][] map) {
+    }
+
     // draw parts
     private void drawScore(Canvas canvas) {
         // reset when game start
@@ -100,7 +104,25 @@ public class GameView extends View {
         canvas.drawText("Score: " + scores, screen_width/2, startY/2, paint);
     }
 
-    private void gameRect() {
+    // draw each blocks
+    private void drawEachRect(Canvas canvas, int i, int j) {
+        paint.reset();
+        paint.setColor(blocks_colors.get(map[i][j], blocks_colors.get(4096)));
+        canvas.drawRect(block_size * j + startX + paint_width / 2, block_size * i + startY
+                + paint_width / 2, block_size * j + startX - paint_width / 2 + block_size, block_size
+                * i + startY - paint_width / 2 + block_size, paint);
+
+        paint.reset();
+        if (map[i][j] <= 4) {
+            paint.setColor(Color.BLACK);
+        } else {
+            paint.setColor(Color.WHITE);
+        }
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setStrokeWidth(paint_width);
+        paint.setTextSize(block_size * 5 / 12);
+        canvas.drawText(String.valueOf(map[i][j]), block_size * j + startX + block_size / 2,
+                block_size * i + startY + block_size * 2 / 3, paint);
     }
 
     //draw game background
