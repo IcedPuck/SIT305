@@ -1,6 +1,7 @@
 package com.demo.flyingbrid;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -21,6 +22,7 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
+    Intent intent;
     private int width;
     int height;
     //ball value
@@ -194,7 +196,8 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onTouch(View view, MotionEvent motionEvent) {
                         switch (motionEvent.getAction()){
                             case MotionEvent.ACTION_DOWN:
-                                Play();
+                                intent = new Intent(MainActivity.this,Select.class);
+                                MainActivity.this.startActivity(intent);
                                 break;
                         }
                         return true;
