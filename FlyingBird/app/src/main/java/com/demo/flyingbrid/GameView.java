@@ -1,61 +1,33 @@
 package com.demo.flyingbrid;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridLayout;
 
-public class GameView extends GridLayout {
-    public GameView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        initGameView();
+public class GameView extends View {
+    //4x4 map
+    public static final int count = 4;
+    private static SparseIntArray blocks_colors;
+    static {
+        blocks_colors = new SparseIntArray();
+        blocks_colors.put(2, Color.parseColor("#EEE4DA"));
+        blocks_colors.put(4, Color.parseColor("#EDE0C8"));
+        blocks_colors.put(8, Color.parseColor("#F2B179"));
+        blocks_colors.put(16, Color.parseColor("#F59563"));
+        blocks_colors.put(32, Color.parseColor("#F67C5F"));
+        blocks_colors.put(64, Color.parseColor("#F65E3B"));
+        blocks_colors.put(128, Color.parseColor("#DCBF65"));
+        blocks_colors.put(256, Color.parseColor("#EDCC61"));
+        blocks_colors.put(512, Color.parseColor("#EDC850"));
+        blocks_colors.put(1024, Color.parseColor("#DBB732"));
+        blocks_colors.put(2048, Color.parseColor("#EFC329"));
+        blocks_colors.put(4096, Color.parseColor("#FF3C39"));
     }
-    public GameView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initGameView();
-    }
-
     public GameView(Context context) {
         super(context);
-        initGameView();
-    }
-    private void initGameView(){
-        //set on touch listener to read player's finger movement
-        setOnTouchListener(new View.OnTouchListener() {
-            // get
-            private float sX,sY,offsetX,offsetY;
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        //get the position when user click
-                        sX = event.getX();
-                        sY = event.getY();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        // get the move distance when finger off the screen
-                        offsetX = event.getX()-sX;
-                        offsetY = event.getY()-sY;
-                        if (Math.abs(offsetX)>Math.abs(offsetY)) {
-                            //decide the moving directions
-                            if (offsetX<-5) {
-                                System.out.println("left");
-                            }else if (offsetX>5) {
-                                System.out.println("right");
-                            }
-                        }else{
-                            if (offsetY<-5) {
-                                System.out.println("up");
-                            }else if (offsetY>5) {
-                                System.out.println("down");
-                            }
-                        }
-                        break;
-                }
-                return true;
-            }
-        });
-
     }
 }
