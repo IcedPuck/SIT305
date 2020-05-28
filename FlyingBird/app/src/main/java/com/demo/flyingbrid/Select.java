@@ -24,5 +24,14 @@ public class Select extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Jump to Flying Ball",Toast.LENGTH_SHORT).show();
             }
         });
+        FlyingBall = (Button) findViewById(R.id.Game2048);
+        FlyingBall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                intent = new Intent(Select.this, Game2048.class);
+                Select.this.startActivity(intent);
+                Toast.makeText(getApplicationContext(),"Jump to 2048",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

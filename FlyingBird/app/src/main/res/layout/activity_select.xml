@@ -19,6 +19,16 @@
             android:text="Flying Ball"
             android:textAllCaps="false"
             android:textSize="30dp"/>
+
+        <Button
+            android:id="@+id/Game2048"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="2048"
+            android:textAllCaps="false"
+            android:textSize="30dp" />
     </LinearLayout>
 
 </LinearLayout>
