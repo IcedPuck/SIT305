@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.GridLayout;
+import android.widget.Toolbar;
 
 import androidx.annotation.Nullable;
 
@@ -219,7 +220,7 @@ public class GameView extends View {
                         if (distanceY < 0) {
                             ToUp();
                         } else {
-                            Down();
+                            ToDown();
                         }
                     }
                 }
@@ -233,7 +234,204 @@ public class GameView extends View {
         }
         return super.onTouchEvent(event);
     }
+    // create motions
+    private void ToLeft() {
+        if (cannotMove()) {
+            return;
+        }
+        int[][] mapTemp = copyMap(map);
 
+        int k;
+        int temp;
+        for (int i = 0; i < count; i++) {
+            for (int j = 0; j < map[i].length - 1; j++) {
+                k = j;
+                while (k < count - 1 && map[i][k] == 0) {
+                    temp = map[i][k];
+                    map[i][k] = map[i][k + 1];
+                    map[i][k + 1] = temp;
+                    k++;
+                }
+            }
+        }
+
+        for (int i = 0; i < count; i++) {
+            for (int j = 0; j < map[i].length - 1; j++) {
+                if (map[i][j] == map[i][j + 1]) {
+                    map[i][j] *= 2;
+                    scores += map[i][j + 1];
+                    map[i][j + 1] = 0;
+                }
+            }
+        }
+
+        for (int i = 0; i < count; i++) {
+            for (int j = 0; j < map[i].length - 1; j++) {
+                k = j;
+                while (k < count - 1 && map[i][k] == 0) {
+                    temp = map[i][k];
+                    map[i][k] = map[i][k + 1];
+                    map[i][k + 1] = temp;
+                    k++;
+                }
+            }
+        }
+        if (!isEquals(mapTemp, map)) {
+            createRandomBlock();
+        }
+        invalidate();
+        Moved = true;
+    }
+    private void ToRight() {
+        if (cannotMove()) {
+            return;
+        }
+        int[][] mapTemp = copyMap(map);
+
+        int k;
+        int temp;
+        for (int i = 0; i < count; i++) {
+            for (int j = map[i].length - 1; j > 0; j--) {
+                k = j;
+                while (k > 0 && map[i][k] == 0) {
+                    temp = map[i][k];
+                    map[i][k] = map[i][k - 1];
+                    map[i][k - 1] = temp;
+                    k--;
+                }
+            }
+        }
+
+        for (int i = 0; i < count; i++) {
+            for (int j = map[i].length - 1; j > 0; j--) {
+                if (map[i][j] == map[i][j - 1]) {
+                    map[i][j] *= 2;
+                    scores += map[i][j - 1];
+                    map[i][j - 1] = 0;
+                }
+            }
+        }
+
+        for (int i = 0; i < count; i++) {
+            for (int j = map[i].length - 1; j > 0; j--) {
+                k = j;
+                while (k > 0 && map[i][k] == 0) {
+                    temp = map[i][k];
+                    map[i][k] = map[i][k - 1];
+                    map[i][k - 1] = temp;
+                    k--;
+                }
+            }
+        }
+        if (!isEquals(mapTemp, map)) {
+            createRandomBlock();
+        }
+        invalidate();
+        Moved = true;
+    }
+    private void ToUp() {
+        if (cannotMove()) {
+            return;
+        }
+        // 保存移动前状态
+        int[][] mapTemp = copyMap(map);
+
+        // 先消除中间空白方块
+        int k;
+        int temp;
+        for (int j = 0; j < count; j++) {
+            for (int i = 0; i < count - 1; i++) {
+                k = i;
+                while (k < count - 1 && map[k][j] == 0) {
+                    temp = map[k][j];
+                    map[k][j] = map[k + 1][j];
+                    map[k + 1][j] = temp;
+                    k++;
+                }
+            }
+        }
+
+        // 合并能够相加的方块
+        for (int j = 0; j < count; j++) {
+            for (int i = 0; i < count - 1; i++) {
+                if (map[i][j] == map[i + 1][j]) {
+                    map[i][j] *= 2;
+                    scores += map[i + 1][j];
+                    map[i + 1][j] = 0;
+                }
+            }
+        }
+
+        // 再消除一遍中间空白方块
+        for (int j = 0; j < count; j++) {
+            for (int i = 0; i < count - 1; i++) {
+                k = i;
+                while (k < count - 1 && map[k][j] == 0) {
+                    temp = map[k][j];
+                    map[k][j] = map[k + 1][j];
+                    map[k + 1][j] = temp;
+                    k++;
+                }
+            }
+        }
+
+        // 如果移动过后方块数据不相等，说明移动成功，应该创建一个新的方块
+        if (!isEquals(mapTemp, map)) {
+            createRandomBlock();
+        }
+
+        // 刷新画面
+        invalidate();
+        Moved = true;
+    }
+    private void ToDown() {
+        if (cannotMove()) {
+            return;
+        }
+
+        int[][] mapTemp = copyMap(map);
+
+        int k;
+        int temp;
+        for (int j = 0; j < count; j++) {
+            for (int i = count - 1; i > 0; i--) {
+                k = i;
+                while (k > 0 && map[k][j] == 0) {
+                    temp = map[k][j];
+                    map[k][j] = map[k - 1][j];
+                    map[k - 1][j] = temp;
+                    k--;
+                }
+            }
+        }
+
+        for (int j = 0; j < count; j++) {
+            for (int i = count - 1; i > 0; i--) {
+                if (map[i][j] == map[i - 1][j]) {
+                    map[i][j] *= 2;
+                    scores += map[i - 1][j];
+                    map[i - 1][j] = 0;
+                }
+            }
+        }
+
+        for (int j = 0; j < count; j++) {
+            for (int i = count - 1; i > 0; i--) {
+                k = i;
+                while (k > 0 && map[k][j] == 0) {
+                    temp = map[k][j];
+                    map[k][j] = map[k - 1][j];
+                    map[k - 1][j] = temp;
+                    k--;
+                }
+            }
+        }
+        if (!isEquals(mapTemp, map)) {
+            createRandomBlock();
+        }
+        invalidate();
+        Moved = true;
+    }
     private boolean cannotMove(){
         //Finger down state, and has already used the move method, do not continue to call, to prevent the press down multiple calls to move method
         return Pressed && Moved;
