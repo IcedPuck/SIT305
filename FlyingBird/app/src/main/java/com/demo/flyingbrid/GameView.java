@@ -56,6 +56,10 @@ public class GameView extends View {
         blocks_colors.put(4096, Color.parseColor("#FF3C39"));
     }
 
+    public GameView(Context context) {
+        super(context, null);
+    }
+
     public GameView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
@@ -86,7 +90,7 @@ public class GameView extends View {
         drawScore();
     }
     // draw parts
-    private void drawScore(Canvas canvas, int x, int y) {
+    private void drawScore(Canvas canvas) {
         // reset when game start
         paint.reset();
         paint.setColor(Color.GRAY);
@@ -99,13 +103,27 @@ public class GameView extends View {
     private void gameRect() {
     }
 
-    private void gameArea() {
+    //draw game background
+    private void gameArea(Canvas canvas, int x, int y) {
+        //reset when game start
+        paint.reset();
+        paint.setColor(Color.parseColor("#CDC7BB"));
+        canvas.drawRect(x,y,screen_width,y+screen_width,paint);
+
+        //draw the dividing line
+        paint.reset();
+        paint.reset();
+        paint.setColor(Color.parseColor("#CDB599"));
+        paint.setStrokeWidth(paint_width);
+        for (int i = 0; i <= count; i++) {
+            canvas.drawLine(x + i, block_size * i + y, screen_width, block_size * i + y, paint);
+        }
+        for (int i = 0; i <= count; i++) {
+            canvas.drawLine(block_size * i, i + y, block_size * i, screen_width + y, paint);
     }
 
     private void createRandomBlock() {
     }
-//    public GameView(Context context) {
-//        super(context, null);
-//    }
+
 
 }
