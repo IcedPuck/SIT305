@@ -1,5 +1,4 @@
 package com.demo.flyingbrid;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,14 +17,11 @@ import androidx.annotation.Nullable;
 import java.util.Random;
 
 public class GameView extends View {
-    //4x4 map
-    public static final int count = 4;
-    //create standard variables
+    //set variables
     private int screen_width;
     private int screen_height;
     private Paint paint;
     private float paint_width;
-    private float paint_height;
     private int startX;
     private int startY;
     private int block_size;
@@ -34,44 +30,49 @@ public class GameView extends View {
     private float y_click;
     private float x_move;
     private float y_move;
-    private boolean Pressed;
-    private boolean Moved;
+    private boolean isPressed;
+    private boolean isMoved;
     private Random random;
-    private int scores;
+    private int score;
+    // create 4*4 map
+    public static final int COUNT = 4;
 
-    //initial colors
-    private static SparseIntArray blocks_colors;
-
+    //create block color
+    private static SparseIntArray colors;
     static {
-        blocks_colors = new SparseIntArray();
-        blocks_colors.put(2, Color.parseColor("#EEE4DA"));
-        blocks_colors.put(4, Color.parseColor("#EDE0C8"));
-        blocks_colors.put(8, Color.parseColor("#F2B179"));
-        blocks_colors.put(16, Color.parseColor("#F59563"));
-        blocks_colors.put(32, Color.parseColor("#F67C5F"));
-        blocks_colors.put(64, Color.parseColor("#F65E3B"));
-        blocks_colors.put(128, Color.parseColor("#DCBF65"));
-        blocks_colors.put(256, Color.parseColor("#EDCC61"));
-        blocks_colors.put(512, Color.parseColor("#EDC850"));
-        blocks_colors.put(1024, Color.parseColor("#DBB732"));
-        blocks_colors.put(2048, Color.parseColor("#EFC329"));
-        blocks_colors.put(4096, Color.parseColor("#FF3C39"));
+        colors = new SparseIntArray();
+        colors.put(2, Color.parseColor("#EEE4DA"));
+        colors.put(4, Color.parseColor("#EDE0C8"));
+        colors.put(8, Color.parseColor("#F2B179"));
+        colors.put(16, Color.parseColor("#F59563"));
+        colors.put(32, Color.parseColor("#F67C5F"));
+        colors.put(64, Color.parseColor("#F65E3B"));
+        colors.put(128, Color.parseColor("#DCBF65"));
+        colors.put(256, Color.parseColor("#EDCC61"));
+        colors.put(512, Color.parseColor("#EDC850"));
+        colors.put(1024, Color.parseColor("#DBB732"));
+        colors.put(2048, Color.parseColor("#EFC329"));
+        colors.put(4096, Color.parseColor("#FF3C39"));
     }
+
 
     public GameView(Context context) {
-        super(context, null);
+        this(context, null);
     }
 
-    public GameView(Context context, @Nullable AttributeSet attrs) {
+    public GameView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         this.paint = new Paint();
         this.paint_width = 15f;
         this.random = new Random();
-        this.map = new int[count][count];
+        this.map = new int[COUNT][COUNT];
+
+        // 默认初始化3个方块
         for (int i = 0; i < 3; i++) {
-            createRandomBlock();
+            createRandomRect();
         }
+
         WindowManager windowManager = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
@@ -80,41 +81,9 @@ public class GameView extends View {
         screen_height = outMetrics.heightPixels;
 
         startY = (screen_height - screen_width) >> 1;
-        startY = 0;
+        startX = 0;
 
-        block_size = screen_width / count;
-    }
-
-    private void createRandomBlock() {
-        int num = Math.random() < 0.9 ? 2 : 4;
-        int x;
-        int y;
-        do {
-            x = random.nextInt(count);
-            y = random.nextInt(count);
-        } while (map[x][y] != 0);
-        map[x][y] = num;
-    }
-
-    //check is to blocks are equal
-    private boolean isEquals(int[][] tempMap, int[][] map) {
-        for (int i = 0; i < count; i++) {
-            for (int j = 0; i < count; i++) {
-                if (tempMap[i][j] != map[i][j]) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    // copy game data
-    private int[][] copyMap(int[][] map) {
-        int[][] tempMap = new int[count][count];
-        for (int i = 0; i < count; i++) {
-            tempMap[i] = map[i].clone();
-        }
-        return tempMap;
+        block_size = screen_width / COUNT;
     }
 
     @Override
@@ -122,38 +91,48 @@ public class GameView extends View {
         super.onDraw(canvas);
         gameArea(canvas, startX, startY);
         gameRect(canvas, map);
-        drawScore(canvas);
+        Score(canvas);
     }
 
+    private void gameArea(Canvas canvas, int x, int y) {
+        // draw background area
+        paint.reset();
+        paint.setColor(Color.parseColor("#CDC7BB"));
+        canvas.drawRect(x, y, screen_width, y + screen_width, paint);
+
+        // draw divide line
+        paint.reset();
+        paint.setColor(Color.parseColor("#CDB599"));
+        paint.setStrokeWidth(paint_width);
+        for (int i = 0; i <= COUNT; i++) {
+            canvas.drawLine(x + i, block_size * i + y, screen_width, block_size * i + y, paint);
+        }
+        for (int i = 0; i <= COUNT; i++) {
+            canvas.drawLine(block_size * i, i + y, block_size * i, screen_width + y, paint);
+        }
+    }
+
+    //draw blocks
     private void gameRect(Canvas canvas, int[][] map) {
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 if (map[i][j] != 0) {
-                    drawEachRect(canvas, i, j);
+                    drawAllRect(canvas, i, j);
                 }
             }
         }
     }
 
-    // draw parts
-    private void drawScore(Canvas canvas) {
-        // reset when game start
+    // draw all blocks
+    private void drawAllRect(Canvas canvas, int i, int j) {
+        // draw block background color
         paint.reset();
-        paint.setColor(Color.GRAY);
-        paint.setTextSize(block_size * 5 / 12);
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setStrokeWidth(paint_width);
-        canvas.drawText("Score: " + scores, screen_width / 2, startY / 2, paint);
-    }
-
-    // draw each blocks
-    private void drawEachRect(Canvas canvas, int i, int j) {
-        paint.reset();
-        paint.setColor(blocks_colors.get(map[i][j], blocks_colors.get(4096)));
+        paint.setColor(colors.get(map[i][j], colors.get(4096)));
         canvas.drawRect(block_size * j + startX + paint_width / 2, block_size * i + startY
                 + paint_width / 2, block_size * j + startX - paint_width / 2 + block_size, block_size
                 * i + startY - paint_width / 2 + block_size, paint);
 
+        // divide blocks
         paint.reset();
         if (map[i][j] <= 4) {
             paint.setColor(Color.BLACK);
@@ -167,32 +146,58 @@ public class GameView extends View {
                 block_size * i + startY + block_size * 2 / 3, paint);
     }
 
-    //draw game background
-    private void gameArea(Canvas canvas, int x, int y) {
-        //reset when game start
+    //display scores
+    private void Score(Canvas canvas) {
         paint.reset();
-        paint.setColor(Color.parseColor("#CDC7BB"));
-        canvas.drawRect(x, y, screen_width, y + screen_width, paint);
-
-        //draw the dividing line
-        paint.reset();
-        paint.reset();
-        paint.setColor(Color.parseColor("#CDB599"));
+        paint.setColor(Color.GRAY);
+        paint.setTextSize(block_size * 5 / 12);
+        paint.setTextAlign(Paint.Align.CENTER);
         paint.setStrokeWidth(paint_width);
-        for (int i = 0; i <= count; i++) {
-            canvas.drawLine(x + i, block_size * i + y, screen_width, block_size * i + y, paint);
-        }
-        for (int i = 0; i <= count; i++) {
-            canvas.drawLine(block_size * i, i + y, block_size * i, screen_width + y, paint);
-        }
+        canvas.drawText("Scores：" + score, screen_width / 2, startY / 2, paint);
     }
 
-    //realize the on touch event
+    //create random blocks
+    private void createRandomRect() {
+        // random block contains number 2 or 4
+        int num = Math.random() < 0.9 ? 2 : 4;
+
+        int x;
+        int y;
+        //find an empty block randomly, and fill it until no empty block
+        do {
+            x = random.nextInt(COUNT);
+            y = random.nextInt(COUNT);
+        } while (map[x][y] != 0);
+        // put new number into the map
+        map[x][y] = num;
+    }
+
+    //decide whether two blocks are same number
+    private boolean isEquals(int[][] tempMap, int[][] map) {
+        for (int i = 0; i < COUNT; i++) {
+            for (int j = 0; j < COUNT; j++) {
+                if (tempMap[i][j] != map[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    //copy game data
+    private int[][] copyMap(int[][] map) {
+        int[][] tempMap = new int[COUNT][COUNT];
+        for (int i = 0; i < COUNT; i++) {
+            tempMap[i] = map[i].clone();
+        }
+        return tempMap;
+    }
+    //handle ontouch function
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Pressed = true;
+                isPressed = true;
                 x_click = event.getRawX();
                 y_click = event.getRawY();
                 break;
@@ -202,9 +207,9 @@ public class GameView extends View {
 
                 // move distance
                 int distanceX = (int) (x_move - x_click);
-                int distanceY = (int) (y_move - x_click);
+                int distanceY = (int) (y_move - y_click);
 
-                // abs value of move distance
+                // abs value for move distance
                 int absX = Math.abs(distanceX);
                 int absY = Math.abs(distanceY);
 
@@ -212,137 +217,50 @@ public class GameView extends View {
                 if (absX > (screen_width >> 2) || absY > (screen_width >> 2)) {
                     if (absX > absY) {
                         if (distanceX < 0) {
-                            ToLeft();
+                            moveToLeft();
                         } else {
-                            ToRight();
+                            moveToRight();
                         }
                     } else {
                         if (distanceY < 0) {
-                            ToUp();
+                            moveToUp();
                         } else {
-                            ToDown();
+                            moveToDown();
                         }
                     }
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                Pressed = false;
-                Moved = false;
+                isPressed = false;
+                isMoved = false;
                 break;
             default:
                 break;
         }
         return super.onTouchEvent(event);
     }
-    // create motions
-    private void ToLeft() {
-        if (cannotMove()) {
-            return;
-        }
-        int[][] mapTemp = copyMap(map);
 
-        int k;
-        int temp;
-        for (int i = 0; i < count; i++) {
-            for (int j = 0; j < map[i].length - 1; j++) {
-                k = j;
-                while (k < count - 1 && map[i][k] == 0) {
-                    temp = map[i][k];
-                    map[i][k] = map[i][k + 1];
-                    map[i][k + 1] = temp;
-                    k++;
-                }
-            }
-        }
 
-        for (int i = 0; i < count; i++) {
-            for (int j = 0; j < map[i].length - 1; j++) {
-                if (map[i][j] == map[i][j + 1]) {
-                    map[i][j] *= 2;
-                    scores += map[i][j + 1];
-                    map[i][j + 1] = 0;
-                }
-            }
-        }
-
-        for (int i = 0; i < count; i++) {
-            for (int j = 0; j < map[i].length - 1; j++) {
-                k = j;
-                while (k < count - 1 && map[i][k] == 0) {
-                    temp = map[i][k];
-                    map[i][k] = map[i][k + 1];
-                    map[i][k + 1] = temp;
-                    k++;
-                }
-            }
-        }
-        if (!isEquals(mapTemp, map)) {
-            createRandomBlock();
-        }
-        invalidate();
-        Moved = true;
+    private boolean canNotMove() {
+        //finger down state, and has already used the move method, will not continue to call, to prevent the press down multiple calls to move method
+        return isPressed && isMoved;
     }
-    private void ToRight() {
-        if (cannotMove()) {
+
+    //implement motions
+    private void moveToUp() {
+        if (canNotMove()) {
             return;
         }
+        // Save the pre-move state
         int[][] mapTemp = copyMap(map);
 
+        // eliminate the blank square in the middle
         int k;
         int temp;
-        for (int i = 0; i < count; i++) {
-            for (int j = map[i].length - 1; j > 0; j--) {
-                k = j;
-                while (k > 0 && map[i][k] == 0) {
-                    temp = map[i][k];
-                    map[i][k] = map[i][k - 1];
-                    map[i][k - 1] = temp;
-                    k--;
-                }
-            }
-        }
-
-        for (int i = 0; i < count; i++) {
-            for (int j = map[i].length - 1; j > 0; j--) {
-                if (map[i][j] == map[i][j - 1]) {
-                    map[i][j] *= 2;
-                    scores += map[i][j - 1];
-                    map[i][j - 1] = 0;
-                }
-            }
-        }
-
-        for (int i = 0; i < count; i++) {
-            for (int j = map[i].length - 1; j > 0; j--) {
-                k = j;
-                while (k > 0 && map[i][k] == 0) {
-                    temp = map[i][k];
-                    map[i][k] = map[i][k - 1];
-                    map[i][k - 1] = temp;
-                    k--;
-                }
-            }
-        }
-        if (!isEquals(mapTemp, map)) {
-            createRandomBlock();
-        }
-        invalidate();
-        Moved = true;
-    }
-    private void ToUp() {
-        if (cannotMove()) {
-            return;
-        }
-        // 保存移动前状态
-        int[][] mapTemp = copyMap(map);
-
-        // 先消除中间空白方块
-        int k;
-        int temp;
-        for (int j = 0; j < count; j++) {
-            for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < COUNT; j++) {
+            for (int i = 0; i < COUNT - 1; i++) {
                 k = i;
-                while (k < count - 1 && map[k][j] == 0) {
+                while (k < COUNT - 1 && map[k][j] == 0) {
                     temp = map[k][j];
                     map[k][j] = map[k + 1][j];
                     map[k + 1][j] = temp;
@@ -351,22 +269,22 @@ public class GameView extends View {
             }
         }
 
-        // 合并能够相加的方块
-        for (int j = 0; j < count; j++) {
-            for (int i = 0; i < count - 1; i++) {
+        // Merges squares that can be added
+        for (int j = 0; j < COUNT; j++) {
+            for (int i = 0; i < COUNT - 1; i++) {
                 if (map[i][j] == map[i + 1][j]) {
                     map[i][j] *= 2;
-                    scores += map[i + 1][j];
+                    score += map[i + 1][j];
                     map[i + 1][j] = 0;
                 }
             }
         }
 
-        // 再消除一遍中间空白方块
-        for (int j = 0; j < count; j++) {
-            for (int i = 0; i < count - 1; i++) {
+        // Get rid of the white space again
+        for (int j = 0; j < COUNT; j++) {
+            for (int i = 0; i < COUNT - 1; i++) {
                 k = i;
-                while (k < count - 1 && map[k][j] == 0) {
+                while (k < COUNT - 1 && map[k][j] == 0) {
                     temp = map[k][j];
                     map[k][j] = map[k + 1][j];
                     map[k + 1][j] = temp;
@@ -375,17 +293,18 @@ public class GameView extends View {
             }
         }
 
-        // 如果移动过后方块数据不相等，说明移动成功，应该创建一个新的方块
+        // If the cube data is not equal after the move, the move is successful and a new cube should be created
         if (!isEquals(mapTemp, map)) {
-            createRandomBlock();
+            createRandomRect();
         }
 
-        // 刷新画面
+        // Refresh the screen
         invalidate();
-        Moved = true;
+        isMoved = true;
     }
-    private void ToDown() {
-        if (cannotMove()) {
+
+    private void moveToDown() {
+        if (canNotMove()) {
             return;
         }
 
@@ -393,8 +312,8 @@ public class GameView extends View {
 
         int k;
         int temp;
-        for (int j = 0; j < count; j++) {
-            for (int i = count - 1; i > 0; i--) {
+        for (int j = 0; j < COUNT; j++) {
+            for (int i = COUNT - 1; i > 0; i--) {
                 k = i;
                 while (k > 0 && map[k][j] == 0) {
                     temp = map[k][j];
@@ -405,18 +324,18 @@ public class GameView extends View {
             }
         }
 
-        for (int j = 0; j < count; j++) {
-            for (int i = count - 1; i > 0; i--) {
+        for (int j = 0; j < COUNT; j++) {
+            for (int i = COUNT - 1; i > 0; i--) {
                 if (map[i][j] == map[i - 1][j]) {
                     map[i][j] *= 2;
-                    scores += map[i - 1][j];
+                    score += map[i - 1][j];
                     map[i - 1][j] = 0;
                 }
             }
         }
 
-        for (int j = 0; j < count; j++) {
-            for (int i = count - 1; i > 0; i--) {
+        for (int j = 0; j < COUNT; j++) {
+            for (int i = COUNT - 1; i > 0; i--) {
                 k = i;
                 while (k > 0 && map[k][j] == 0) {
                     temp = map[k][j];
@@ -427,13 +346,105 @@ public class GameView extends View {
             }
         }
         if (!isEquals(mapTemp, map)) {
-            createRandomBlock();
+            createRandomRect();
         }
         invalidate();
-        Moved = true;
+        isMoved = true;
     }
-    private boolean cannotMove(){
-        //Finger down state, and has already used the move method, do not continue to call, to prevent the press down multiple calls to move method
-        return Pressed && Moved;
+
+    private void moveToLeft() {
+        if (canNotMove()) {
+            return;
+        }
+        int[][] mapTemp = copyMap(map);
+
+        int k;
+        int temp;
+        for (int i = 0; i < COUNT; i++) {
+            for (int j = 0; j < map[i].length - 1; j++) {
+                k = j;
+                while (k < COUNT - 1 && map[i][k] == 0) {
+                    temp = map[i][k];
+                    map[i][k] = map[i][k + 1];
+                    map[i][k + 1] = temp;
+                    k++;
+                }
+            }
+        }
+
+        for (int i = 0; i < COUNT; i++) {
+            for (int j = 0; j < map[i].length - 1; j++) {
+                if (map[i][j] == map[i][j + 1]) {
+                    map[i][j] *= 2;
+                    score += map[i][j + 1];
+                    map[i][j + 1] = 0;
+                }
+            }
+        }
+
+        for (int i = 0; i < COUNT; i++) {
+            for (int j = 0; j < map[i].length - 1; j++) {
+                k = j;
+                while (k < COUNT - 1 && map[i][k] == 0) {
+                    temp = map[i][k];
+                    map[i][k] = map[i][k + 1];
+                    map[i][k + 1] = temp;
+                    k++;
+                }
+            }
+        }
+        if (!isEquals(mapTemp, map)) {
+            createRandomRect();
+        }
+        invalidate();
+        isMoved = true;
+    }
+
+    private void moveToRight() {
+        if (canNotMove()) {
+            return;
+        }
+        int[][] mapTemp = copyMap(map);
+
+        int k;
+        int temp;
+        for (int i = 0; i < COUNT; i++) {
+            for (int j = map[i].length - 1; j > 0; j--) {
+                k = j;
+                while (k > 0 && map[i][k] == 0) {
+                    temp = map[i][k];
+                    map[i][k] = map[i][k - 1];
+                    map[i][k - 1] = temp;
+                    k--;
+                }
+            }
+        }
+
+        for (int i = 0; i < COUNT; i++) {
+            for (int j = map[i].length - 1; j > 0; j--) {
+                if (map[i][j] == map[i][j - 1]) {
+                    map[i][j] *= 2;
+                    score += map[i][j - 1];
+                    map[i][j - 1] = 0;
+                }
+            }
+        }
+
+        for (int i = 0; i < COUNT; i++) {
+            for (int j = map[i].length - 1; j > 0; j--) {
+                k = j;
+                while (k > 0 && map[i][k] == 0) {
+                    temp = map[i][k];
+                    map[i][k] = map[i][k - 1];
+                    map[i][k - 1] = temp;
+                    k--;
+                }
+            }
+        }
+        if (!isEquals(mapTemp, map)) {
+            createRandomRect();
+        }
+        invalidate();
+        isMoved = true;
     }
 }
