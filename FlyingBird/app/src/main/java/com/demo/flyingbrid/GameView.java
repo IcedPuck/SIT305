@@ -184,6 +184,58 @@ public class GameView extends View {
         for (int i = 0; i <= count; i++) {
             canvas.drawLine(block_size * i, i + y, block_size * i, screen_width + y, paint);
         }
+    }
 
+    //realize the on touch event
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                Pressed = true;
+                x_click = event.getRawX();
+                y_click = event.getRawY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                x_move = event.getRawX();
+                y_move = event.getRawY();
+
+                // move distance
+                int distanceX = (int) (x_move - x_click);
+                int distanceY = (int) (y_move - x_click);
+
+                // abs value of move distance
+                int absX = Math.abs(distanceX);
+                int absY = Math.abs(distanceY);
+
+                // If you move more than a quarter of the width of the screen, it counts as effective movement
+                if (absX > (screen_width >> 2) || absY > (screen_width >> 2)) {
+                    if (absX > absY) {
+                        if (distanceX < 0) {
+                            ToLeft();
+                        } else {
+                            ToRight();
+                        }
+                    } else {
+                        if (distanceY < 0) {
+                            ToUp();
+                        } else {
+                            Down();
+                        }
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                Pressed = false;
+                Moved = false;
+                break;
+            default:
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private boolean cannotMove(){
+        //Finger down state, and has already used the move method, do not continue to call, to prevent the press down multiple calls to move method
+        return Pressed && Moved;
     }
 }
