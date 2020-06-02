@@ -3,32 +3,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:gravity="center"
+    android:background="@drawable/backgrand"
     tools:context=".Select">
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_gravity="center">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:id="@+id/FlyingBall"
-            android:text="Flying Ball"
-            android:textAllCaps="false"
-            android:textSize="30dp"/>
+        android:layout_gravity="center"
+        android:layout_margin="40dp">
 
         <Button
-            android:id="@+id/Game2048"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:id="@+id/FlyingBall"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
             android:gravity="center"
-            android:text="2048"
+            android:background="@drawable/flyingball"
             android:textAllCaps="false"
             android:textSize="30dp" />
     </LinearLayout>
-
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="40dp"
+        android:layout_gravity="center">
+    <Button
+        android:id="@+id/Game2048"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:gravity="center"
+        android:background="@drawable/newgame"
+        android:textAllCaps="false"
+        android:textSize="30dp" />
+    </LinearLayout>
 </LinearLayout>
