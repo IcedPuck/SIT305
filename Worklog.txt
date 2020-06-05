@@ -2,16 +2,25 @@
 6/May/2020 Write idea, get the group meeting and identify a plan @Jiaming Ren
 7/May/2020 Drow UI plan and show in group in this idea @Xiangtian Zheng
 7/May/2020 Drow UI plan and show in group in this idea @Jiaming Ren
+8/May/2020 Write pseudocode for the flyball game @Xiangtian Zheng
+8/May/2020 Write pseudocode for the flyball game @Jiaming Ren
 9/May/2020 Frist create Flybrid game project.  @Xiangtian Zheng
 11/May/2020 Upload the project to github. @Xiangtian Zheng
 13/May/2020 discard my approaches and use Xiangtian Zheng's method to build the flying ball game@Jiaming Ren
 13/May/2020 Updata the project player attribute in program to github. @Xiangtian Zheng
-15/May/2020 find a bug and add a play function @Tim Ren
+15/May/2020 find a bug and add a play function @Jiaming Ren
 18/May/2020 fix last bug then double check the finction, find new bug. @Xiangtian Zheng
+20/May/2020 Write pseudocode for the 2048 game @Xiangtian Zheng
+20/May/2020 Write pseudocode for the 2048 game @Jiaming Ren
 22/May/2020 fix bug and debug the project probelm but find new bug@Xiangtian Zheng
+23/May/2020 test flying ball game and the game is finished @Jiaming Ren
+23/May/2020 test flying ball game and the game is finished @Xiangtian Zheng
 25/May/2020 fix bug and add main page @Xiangtian Zheng
 25/May/2020 start developing 2048 @Jiaming Ren
-26/May/2020 fix minor bugs@Jiaming Ren
+26/May/2020 fix minor bugs @Jiaming Ren
+27/May/2020 test 2048 game and the game is finished @Jiaming Ren
+27/May/2020 test 2048 game and the game is finished @Xiangtian Zheng
 28/May/2020 change the game logic function to improvement the project @Xiangtian Zheng
 3/June/2020 Improvement the login page UI and function @Xiangtian Zheng
 5/June/2020 double check the project working currect @Xiangtian Zheng
+5/June/2020 double check the project working currect @Jiaming Ren
