@@ -302,7 +302,7 @@ public class GameView extends View {
         invalidate();
         isMoved = true;
     }
-
+    // move actions 
     private void moveToDown() {
         if (canNotMove()) {
             return;
